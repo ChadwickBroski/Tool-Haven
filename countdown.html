@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="StopWatch-Logo.png" type="image/x-icon">
+    <style>
+            body {
+                margin: 0;
+                font-family: 'Roboto', sans-serif;
+                color: #333;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                background-color: #f5f5f5;
+                position: relative;
+            }
+            .logo {
+                font-size: 2.5rem;
+                color: #ff6347;
+                position: absolute;
+                top: 20px;
+                left: 20px;
+            }
+            .stopwatch {
+                background-color: #fff;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 30px; /* Increased padding for more space */
+                width: 500px; /* Increased width */
+                text-align: center;
+                margin-top: 60px; /* Adjusted to fit the logo */
+            }
+            .display {
+                background-color: #eaeaea;
+                border-radius: 5px;
+                padding: 20px; /* Increased padding for larger display */
+                font-size: 2rem; /* Increased font size for larger text */
+                margin-bottom: 20px;
+                width: calc(100% - 0px);
+                box-sizing: border-box;
+            }
+            .buttons {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+            .button {
+                background-color: #ff6347;
+                border: none;
+                border-radius: 5px;
+                color: #fff;
+                padding: 20px; /* Increased padding for larger buttons */
+                font-size: 1.5rem; /* Increased font size for larger text */
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            .button:hover {
+                background-color: #e55347;
+            }
+            .button.operator {
+                background-color: #ff6347;
+            }
+            .button.operator:hover {
+                background-color: #e55347;
+            }
+            .circle-container {
+                position: relative;
+                width: 220px;
+                height: 220px;
+                margin: 0 auto 20px;
+            }
+
+            .circle-container svg {
+                transform: rotate(-90deg);
+            }
+
+            .bg-circle {
+                fill: none;
+                stroke: #ddd;
+                stroke-width: 12;
+            }
+
+            .progress-circle {
+                fill: none;
+                stroke: #ff6347;
+                stroke-width: 12;
+                stroke-linecap: round;
+                stroke-dasharray: 628;
+                stroke-dashoffset: 628;
+                transition: stroke-dashoffset 1s linear;
+            }
+
+            .display {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: none;
+                font-size: 2rem;
+            }
+
+            .middle-btn {
+                display: block;
+                margin: 15px auto 25px auto;
+                width: 180px;
+                font-size: 1.4rem;
+            }
+
+        </style>
+</head>
+<body>
+    <div class="stopwatch">
+        <div class="circle-container">
+            <svg width="220" height="220">
+                <circle class="bg-circle" cx="110" cy="110" r="100"></circle>
+                <circle class="progress-circle" cx="110" cy="110" r="100"></circle>
+            </svg>
+            <div class="display" id="display">00:00:00</div>
+        </div>  
+
+        <div class="buttons">
+            <div class="button" onclick="addMinutes(1)">+1m</div>
+            <div class="button" onclick="addMinutes(10)">+10m</div>
+            <div class="button" onclick="addMinutes(30)">+30m</div>
+            <div class="button" onclick="addHours(1)">+1h</div>          
+        </div>
+        
+        <button class="button operator middle-btn" onclick="toggleTimer()">
+            Start
+        </button>
+    </div>
+    <div class="icon"><i class="fa-regular fa-clock"></i></div>
+
+    <script>
+        let timer = null;
+        let totalSeconds = 0;
+        let remainingSeconds = 0;
+        let running = false;
+    
+        const display = document.getElementById("display");
+        const circle = document.querySelector(".progress-circle");
+        const btn = document.querySelector(".middle-btn");
+    
+        const radius = 100;
+        const circumference = 2 * Math.PI * radius;
+        circle.style.strokeDasharray = circumference;
+        circle.style.strokeDashoffset = circumference;
+    
+        function pad(num) {
+            return num < 10 ? "0" + num : num;
+        }
+    
+        function updateDisplay() {
+            const hrs = Math.floor(remainingSeconds / 3600);
+            const mins = Math.floor((remainingSeconds % 3600) / 60);
+            const secs = remainingSeconds % 60;
+    
+            display.textContent = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+    
+            if (totalSeconds > 0) {
+                const progress = remainingSeconds / totalSeconds;
+                circle.style.strokeDashoffset =
+                    circumference - circumference * progress;
+            }
+        }
+    
+        function startTimer() {
+            if (running || remainingSeconds <= 0) return;
+    
+            running = true;
+            btn.textContent = "Stop";
+    
+            timer = setInterval(() => {
+                if (remainingSeconds > 0) {
+                    remainingSeconds--;
+                    updateDisplay();
+                } else {
+                    stopTimer();
+                }
+            }, 1000);
+        }
+    
+        function stopTimer() {
+            clearInterval(timer);
+            timer = null;
+            running = false;
+            btn.textContent = "Start";
+        }
+    
+        function toggleTimer() {
+            if (running) {
+                stopTimer();
+            } else {
+                startTimer();
+            }
+        }
+    
+        function addMinutes(mins) {
+            totalSeconds += mins * 60;
+            remainingSeconds += mins * 60;
+            updateDisplay();
+        }
+    
+        function addHours(hrs) {
+            totalSeconds += hrs * 3600;
+            remainingSeconds += hrs * 3600;
+            updateDisplay();
+        }
+    
+        updateDisplay();
+    </script>    
+    
+</body>
+</html>
