@@ -60,6 +60,7 @@
             transition: transform 0.3s, box-shadow 0.3s;
             text-decoration: none; /* Ensure the link styling does not affect the appearance */
             color: inherit; /* Use the parent color */
+            position: absolute;
         }
         .tool:hover {
             transform: translateY(-5px);
@@ -73,6 +74,27 @@
         .tool h3 {
             margin: 0;
             font-size: 1.2rem;
+        }
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 0.65rem;
+            padding: 4px 6px;
+            border-radius: 6px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.4px;
+        }
+
+        /* NEW badge */
+        .badge-new {
+            background-color: #2ecc71;
+        }
+
+        /* UPDATED badge */
+        .badge-updated {
+            background-color: #3498db;
         }
     </style>
 </head>
@@ -94,6 +116,7 @@
                 <h3>Stop Watch</h3>
             </a>
             <a href="countdown.html" class="tool" target="_blank">
+                <span class="badge badge-new">NEW</span>
                 <i class="fas fa-clock"></i>
                 <h3>Countdown</h3>
             </a>
@@ -101,3 +124,4 @@
     </div>
 </body>
 </html>
+
